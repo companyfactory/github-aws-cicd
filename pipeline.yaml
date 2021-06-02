@@ -57,7 +57,7 @@ Resources:
       Source:
         Type: GITHUB
         Location: 'git@github.com:companyfactory/github-aws-cicd.git'
-        BuildSpec: buildspec.yaml
+        BuildSpec: buildspec.yml
         Auth:
           Type: OAUTH
           Resource: !Ref CodeBuildSourceCredential
