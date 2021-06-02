@@ -49,7 +49,7 @@ Resources:
       AuthType: PERSONAL_ACCESS_TOKEN
       ServerType: GITHUB
       Token: '{{resolve:secretsmanager:GITHUB_ACCESS:SecretString:GITHUB_ACCESS_TOKEN}}'
-  CodebuildProject:
+  CodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
     Properties:
       Name: !Ref 'AWS::StackName'
