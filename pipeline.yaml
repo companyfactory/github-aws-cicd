@@ -1,4 +1,19 @@
 AWSTemplateFormatVersion: 2010-09-09
+Description: CI/CD github pipeline
+
+Parameters:
+  GithubOwner:
+    Type: String
+    AllowedPattern: "[A-Za-z0-9-]+"
+    Default: quick-refs
+  GithubRepository:
+    Type: String
+    AllowedPattern: "[A-Za-z0-9-]+"
+  GithubBranch:
+    Type: String
+    AllowedPattern: "[A-Za-z0-9-]+"
+    Default: master
+
 Resources:
   CodeBuildServiceRole:
     Type: 'AWS::IAM::Role'
@@ -6,10 +21,10 @@ Resources:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
-          Effect: Allow
-          Principal:
-            Service: codebuild.amazonaws.com
-          Action: 'sts:AsumeRole'
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: 'sts:AsumeRole'
       Policies:
         - PolicyName: root
           PolicyDocument:
@@ -56,8 +71,8 @@ Resources:
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
       Source:
         Type: GITHUB
-        Location: 'https://github.com/companyfactory/github-aws-cicd.git'
-        BuildSpec: buildspec.yml
+        Location: !Sub 'https://github.com/${GithubOwner}/${GithubRepository}.git'
+        BuildSpec: buildspec.yaml
         Auth:
           Type: OAUTH
           Resource: !Ref CodeBuildSourceCredential
@@ -67,9 +82,9 @@ Resources:
         Webhook: true
         FilterGroups:
           - - Type: EVENT
-              Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED'
+              Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_REOPENED'
             - Type: BASE_REF
-              Pattern: !Sub ^refs/heads/master$
+              Pattern: !Sub ^refs/heads/${GithubBranch}$
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
